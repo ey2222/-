@@ -1,0 +1,388 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Nanum+Gothic+Coding:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+/* =========================================================
+   RECEIPT — HTML 구조는 그대로, CSS만으로 만든 긴 영수증
+   포인트: 핫핑크 / 마젠타
+   (증명사진은 photo.png 를 CSS 배경으로 불러옵니다)
+   ========================================================= */
+:root {
+    --accent: #e4208c;       /* 핫핑크 */
+    --accent-dark: #a3125f;  /* 마젠타 */
+    --ink: #3d0a28;          /* 영수증 잉크 (아주 짙은 플럼) */
+    --muted: #8a6a7b;
+    --desk: #efe9ee;
+    --mono: 'Share Tech Mono', 'Nanum Gothic Coding', 'Courier New', monospace;
+    --logo: 'Archivo Black', 'Nanum Gothic Coding', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--desk);
+    scroll-behavior: smooth;
+}
+
+/* ---------- body 자체가 영수증 종이 ---------- */
+body {
+    counter-reset: ach crs;
+    position: relative;
+    width: min(calc(100% - 32px), 460px);
+    margin: 56px auto 80px;
+    padding: 44px 30px 44px;
+    background-color: #fff;
+    background-image: repeating-linear-gradient(90deg, rgba(61, 10, 40, 0.025) 0 2px, transparent 2px 4px);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.75;
+    filter: drop-shadow(0 10px 16px rgba(61, 10, 40, 0.18));
+}
+
+/* 찢어진 위/아래 가장자리 */
+body::before,
+body::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background:
+        linear-gradient(135deg, #fff 8px, transparent 0) 0 0 / 16px 16px,
+        linear-gradient(225deg, #fff 8px, transparent 0) 0 0 / 16px 16px;
+}
+
+body::before {
+    top: -8px;
+    transform: scaleY(-1);
+}
+
+body::after {
+    bottom: -8px;
+}
+
+/* =========================================================
+   헤더: 로고 박스 + 소속 + 소개 + 증명사진
+   ========================================================= */
+header.소개 {
+    padding-bottom: 18px;
+    text-align: center;
+    border-bottom: 2px dashed var(--accent);
+}
+
+header.소개 h2 {
+    display: table;
+    margin: 0 auto 14px;
+    padding: 10px 26px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--logo);
+    font-style: italic;
+    font-size: 2.1rem;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    word-break: break-all;
+}
+
+header.소개 p {
+    margin: 0;
+}
+
+header.소개 p:first-of-type {
+    margin-bottom: 12px;
+    color: var(--accent-dark);
+    font-size: 1.02rem;
+    font-weight: 700;
+}
+
+header.소개 p:nth-of-type(2) {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    word-break: keep-all;
+}
+
+/* 증명사진 — 원본 컬러 그대로 (원본 크기 681 x 625) */
+header.소개::after {
+    content: "";
+    display: block;
+    width: min(100%, 250px);
+    aspect-ratio: 681 / 625;
+    margin: 32px auto 0;   /* ← 글자와 사진 사이 간격 (숫자를 키우면 더 벌어집니다) */
+    background: url("hamster.png") center / cover no-repeat #fde4f0;
+    border: 2px solid var(--ink);
+}
+
+/* =========================================================
+   본문: 섹션을 자르지 않고 점선으로만 이어 붙임
+   ========================================================= */
+article::before {
+    content: "* * *  RESUME  * * *";
+    display: block;
+    padding: 12px 0;
+    white-space: pre;
+    text-align: center;
+    color: var(--accent-dark);
+    letter-spacing: 0.12em;
+    border-bottom: 2px dashed var(--accent);
+}
+
+article section {
+    position: relative;
+    padding: 14px 0 16px;
+    border-bottom: 2px dashed var(--accent);
+}
+
+/* 영수증 머리줄: 왼쪽 ITEM- / 오른쪽 AMT- */
+article section::before,
+article section::after {
+    color: var(--accent-dark);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+article section::before {
+    display: block;
+    margin-bottom: 6px;
+}
+
+article section::after {
+    position: absolute;
+    top: 14px;
+    right: 0;
+}
+
+section.실적::before { content: "ACHIEVEMENTS-"; }
+section.실적::after { content: "ROLE-"; }
+section.수강과목::before { content: "COURSES-"; }
+section.수강과목::after { content: "TYPE-"; }
+section[id="웹프 주차별 링크"]::before { content: "WEEK-"; }
+section[id="웹프 주차별 링크"]::after { content: "LINK-"; }
+
+/* ---------- 표 공통 ---------- */
+table,
+tbody {
+    display: block;
+    width: 100%;
+}
+
+td {
+    padding: 0;
+}
+
+/* 표의 제목 행(th)은 화면에서만 숨김 (HTML에는 그대로 존재) */
+tr:first-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* ---------- 실적: 날짜·분류 / 내용 ........ 역할 ---------- */
+section.실적 tr:not(:first-child) {
+    counter-increment: ach;
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: end;
+    margin: 7px 0;
+}
+
+section.실적 td:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+    padding-right: 0.5ch;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    letter-spacing: 0.04em;
+}
+
+section.실적 td:nth-child(2) {
+    grid-column: 2 / 4;
+    grid-row: 1;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    letter-spacing: 0.04em;
+}
+
+section.실적 td:nth-child(2)::before {
+    content: "· ";
+}
+
+section.실적 td:nth-child(3) {
+    grid-column: 1 / 4;
+    grid-row: 2;
+    display: flex;
+    align-items: flex-end;
+    word-break: keep-all;
+}
+
+section.실적 td:nth-child(4) {
+    grid-column: 4;
+    grid-row: 2;
+    white-space: nowrap;
+    text-align: right;
+}
+
+/* 점선 리더 (이름 ........ 값) */
+section.실적 td:nth-child(3)::after,
+section[id="웹프 주차별 링크"] td:first-child::after,
+section.수강과목 li::after {
+    content: "";
+    flex: 1;
+    min-width: 12px;
+    margin: 0 8px 0.45em 8px;
+    border-bottom: 1.5px dotted var(--muted);
+}
+
+/* ---------- 수강과목: 이름 ........ 교양/전공 ---------- */
+section.수강과목 ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+section.수강과목 li {
+    counter-increment: crs;
+    display: flex;
+    align-items: flex-end;
+    margin: 7px 0;
+    word-break: keep-all;
+}
+
+section.수강과목 li::after {
+    order: 1;
+}
+
+section.수강과목 .tag {
+    order: 2;
+    white-space: nowrap;
+}
+
+li.ge .tag { color: var(--muted); }
+li.Ma .tag { color: var(--accent); font-weight: 700; }
+
+/* ---------- 주차별: 1주차 ........ 링크 ---------- */
+section[id="웹프 주차별 링크"] tr:not(:first-child) {
+    display: flex;
+    align-items: flex-end;
+    margin: 7px 0;
+}
+
+section[id="웹프 주차별 링크"] td:first-child {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+}
+
+section[id="웹프 주차별 링크"] td:last-child {
+    white-space: nowrap;
+    text-align: right;
+}
+
+tr.coming {
+    opacity: 0.4;
+}
+
+/* ---------- 합계 줄 (카운터로 자동 계산) ---------- */
+article::after {
+    content: "TOTAL  실적 " counter(ach) "건 · 수강과목 " counter(crs) "개";
+    display: block;
+    padding: 14px 0 6px;
+    white-space: pre;
+    text-align: center;
+    color: var(--accent);
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+/* =========================================================
+   링크 / 푸터
+   ========================================================= */
+a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+a:hover {
+    color: var(--accent-dark);
+    background: #fde4f0;
+}
+
+footer {
+    padding-top: 18px;
+    text-align: center;
+}
+
+footer::before {
+    content: "THANK YOU! HAVE A NICE DAY";
+    display: block;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+}
+
+footer a {
+    display: inline-block;
+    padding: 6px 18px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+footer a:hover {
+    background: var(--accent-dark);
+    color: #fff;
+}
+
+footer p {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+}
+
+/* 바코드 (장식) */
+footer::after {
+    content: "";
+    display: block;
+    width: 72%;
+    height: 54px;
+    margin: 20px auto 0;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--ink) 0 3px, transparent 3px 5px,
+        var(--ink) 5px 6px, transparent 6px 9px,
+        var(--ink) 9px 13px, transparent 13px 14px,
+        var(--ink) 14px 15px, transparent 15px 18px,
+        var(--ink) 18px 21px, transparent 21px 23px,
+        var(--ink) 23px 24px, transparent 24px 28px
+    );
+}
+
+/* =========================================================
+   모바일
+   ========================================================= */
+@media (max-width: 520px) {
+    body {
+        width: calc(100% - 20px);
+        margin: 36px auto 64px;
+        padding: 36px 18px 38px;
+        font-size: 14px;
+    }
+
+    header.소개 h2 {
+        padding: 8px 20px;
+        font-size: 1.7rem;
+    }
+
+    article::after {
+        font-size: 0.95rem;
+    }
+}
